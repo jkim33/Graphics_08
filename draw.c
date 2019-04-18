@@ -43,7 +43,7 @@ void scanline_convert( struct matrix *points, int i, screen s, zbuffer zb ) {
     middle = upper;
     bottom = lower;
   }
-  else if (points->m[1][i*3 + 2] < points->m[1][lower]) {
+  else if (points->m[1][i*3 + 2] <= points->m[1][lower]) {
     top = upper;
     middle = lower;
     bottom = i*3 + 2;
@@ -70,7 +70,7 @@ void scanline_convert( struct matrix *points, int i, screen s, zbuffer zb ) {
   double z1 = bz;
 
   for (double y = by; y < my; y++) {
-    draw_line(x0, y, z0, x1, y, z1, s, zb, c);
+    draw_line((int)x0, (int)y, z0, (int)x1, (int)y, z1, s, zb, c);
     x0 += (tx - bx)/(ty - by);
     x1 += (mx - bx)/(my - by);
     z0 += (tz - bz)/(ty - by);
@@ -78,8 +78,8 @@ void scanline_convert( struct matrix *points, int i, screen s, zbuffer zb ) {
   }
   x1 = mx;
   z1 = mz;
-  for (double y = (int)my; y < ty; y++) {
-    draw_line(x0, y, z0, x1, y, z1, s, zb, c);
+  for (double y = my; y < ty; y++) {
+    draw_line((int)x0, (int)y, z0, (int)x1, (int)y, z1, s, zb, c);
     x0 += (tx - bx)/(ty - by);
     x1 += (tx - mx)/(ty - my);
     z0 += (tz - bz)/(ty - by);
@@ -136,6 +136,7 @@ void draw_polygons( struct matrix *polygons, screen s, zbuffer zb, color c ) {
 
     if ( normal[2] > 0 ) {
 
+      scanline_convert(polygons, point/3, s, zb);
       /*
       draw_line( polygons->m[0][point],
                  polygons->m[1][point],
@@ -159,7 +160,7 @@ void draw_polygons( struct matrix *polygons, screen s, zbuffer zb, color c ) {
                  polygons->m[2][point+2],
                  s, zb, c);
       */
-      scanline_convert(polygons, point/3, s, zb);
+      //scanline_convert(polygons, point/3, s, zb);
     }
   }
 }
